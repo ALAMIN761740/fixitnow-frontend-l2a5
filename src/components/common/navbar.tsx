@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { APP_NAME } from "@/constants/app";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { useAuth } from "@/providers/auth-provider";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -11,6 +14,8 @@ const navLinks = [
 ];
 
 export function Navbar() {
+    const { user, isAuthenticated, logout } = useAuth();
+
     return (
         <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
             <Container className="flex items-center justify-between py-4">
@@ -37,10 +42,25 @@ export function Navbar() {
                 </nav>
 
                 <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                        Sign in
-                    </Button>
-                    <Button size="sm">Get started</Button>
+                    {isAuthenticated ? (
+                        <>
+                            <span className="hidden text-sm font-medium text-slate-600 sm:inline-flex">
+                                {user?.email}
+                            </span>
+                            <Button variant="outline" size="sm" onClick={logout}>
+                                Logout
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+                                <Link href="/auth/login">Sign in</Link>
+                            </Button>
+                            <Button size="sm" asChild>
+                                <Link href="/auth/register">Get started</Link>
+                            </Button>
+                        </>
+                    )}
                     <button className="rounded-full p-2 text-slate-600 hover:bg-slate-100 md:hidden" aria-label="Open menu">
                         <Menu className="h-5 w-5" />
                     </button>
