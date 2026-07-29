@@ -1,0 +1,51 @@
+import Link from "next/link";
+import { Menu } from "lucide-react";
+import { APP_NAME } from "@/constants/app";
+import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+
+const navLinks = [
+    { label: "Home", href: "/" },
+    { label: "Services", href: "/services" },
+    { label: "Technicians", href: "/technicians" },
+];
+
+export function Navbar() {
+    return (
+        <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+            <Container className="flex items-center justify-between py-4">
+                <Link href="/" className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-sm font-semibold text-white">
+                        FN
+                    </div>
+                    <div>
+                        <p className="text-base font-semibold text-slate-900">{APP_NAME}</p>
+                        <p className="text-sm text-slate-500">Service platform</p>
+                    </div>
+                </Link>
+
+                <nav className="hidden items-center gap-6 md:flex">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                </nav>
+
+                <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                        Sign in
+                    </Button>
+                    <Button size="sm">Get started</Button>
+                    <button className="rounded-full p-2 text-slate-600 hover:bg-slate-100 md:hidden" aria-label="Open menu">
+                        <Menu className="h-5 w-5" />
+                    </button>
+                </div>
+            </Container>
+        </header>
+    );
+}
