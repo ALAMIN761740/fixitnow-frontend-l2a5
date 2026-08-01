@@ -1,28 +1,30 @@
+"use client";
+
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@/components/common/footer";
 import { Navbar } from "@/components/common/navbar";
+import { ServiceCard, TechnicianCard } from "@/components/common/service-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { Section } from "@/components/ui/section";
 import { APP_NAME } from "@/constants/app";
-
-const featureCards = [
-  {
-    title: "Modern foundation",
-    description: "Reusable UI primitives built for scalable pages and dashboards.",
-  },
-  {
-    title: "Responsive layout",
-    description: "Designed to support mobile, tablet, and desktop experiences.",
-  },
-  {
-    title: "SaaS-ready feel",
-    description: "Clean spacing, soft shadows, and polished interaction patterns.",
-  },
-];
+import { getServices, getTechnicians } from "@/services/public";
 
 export default function Home() {
+  const { data: services = [], isLoading: servicesLoading } = useQuery({
+    queryKey: ["services"],
+    queryFn: getServices,
+  });
+
+  const { data: technicians = [], isLoading: techniciansLoading } = useQuery({
+    queryKey: ["technicians"],
+    queryFn: getTechnicians,
+  });
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -31,33 +33,72 @@ export default function Home() {
           <Container>
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div className="max-w-2xl">
-                <Badge variant="secondary">Design system foundation</Badge>
+                <Badge variant="secondary">Live public platform</Badge>
                 <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-                  Build beautiful service experiences with {APP_NAME}.
+                  Discover trusted services with {APP_NAME}.
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-slate-600">
-                  A polished reusable UI system for the next generation of booking,
-                  technician, and admin experiences.
+                  Browse services, compare technicians, and find the right expert for every job.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Button size="lg">Explore the system</Button>
-                  <Button variant="outline" size="lg">
-                    View components
+                  <Button asChild size="lg">
+                    <Link href="/services">Explore services</Link>
+                  </Button>
+                  <Button variant="outline" asChild size="lg">
+                    <Link href="/technicians">View technicians</Link>
                   </Button>
                 </div>
               </div>
 
               <Card className="p-8">
                 <div className="grid gap-4">
-                  {featureCards.map((feature) => (
-                    <div key={feature.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <h3 className="font-semibold text-slate-900">{feature.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
-                    </div>
-                  ))}
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm font-semibold text-slate-900">Fast browsing</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">Search, filter, and explore the full service and technician directory.</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm font-semibold text-slate-900">Responsive layout</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">Cards and sections adapt beautifully across devices.</p>
+                  </div>
                 </div>
               </Card>
             </div>
+          </Container>
+        </Section>
+
+        <Section eyebrow="Popular services" title="Featured services" description="A quick snapshot of the latest services available through the platform.">
+          <Container>
+            {servicesLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <LoadingSkeleton key={index} className="h-48" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {services.slice(0, 3).map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
+              </div>
+            )}
+          </Container>
+        </Section>
+
+        <Section eyebrow="Trusted experts" title="Top technicians" description="Meet experienced professionals ready to help with your next booking.">
+          <Container>
+            {techniciansLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <LoadingSkeleton key={index} className="h-56" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {technicians.slice(0, 3).map((technician) => (
+                  <TechnicianCard key={technician.id} technician={technician} />
+                ))}
+              </div>
+            )}
           </Container>
         </Section>
       </main>
