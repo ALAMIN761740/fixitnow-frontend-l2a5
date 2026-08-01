@@ -11,7 +11,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { Section } from "@/components/ui/section";
 import { createPaymentSession } from "@/services/payment";
-import { getMyBookings } from "@/services/bookings";
+import { createReview } from "@/services/reviews";
+import { getMyBookings, updateBookingStatus } from "@/services/bookings";
 import { formatCurrency, formatDate } from "@/utils/format";
 import type { Booking } from "@/types/booking";
 import { BOOKING_STATUS } from "@/constants/app";
@@ -46,6 +47,9 @@ function getPaymentLabel(booking: Booking) {
 export default function CustomerBookingsPage() {
     const queryClient = useQueryClient();
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+    const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState("");
 
     const { data: bookings = [], isLoading } = useQuery({
         queryKey: ["bookings"],
@@ -65,6 +69,35 @@ export default function CustomerBookingsPage() {
             const message = error instanceof Error ? error.message : "Unable to initiate payment.";
             toast.error(message);
             setSelectedBookingId(null);
+        },
+    });
+
+    const cancelMutation = useMutation({
+        mutationFn: ({ bookingId }: { bookingId: string }) =>
+            updateBookingStatus(bookingId, BOOKING_STATUS.CANCELLED),
+        onSuccess: () => {
+            toast.success("Booking cancelled.");
+            queryClient.invalidateQueries({ queryKey: ["bookings"] });
+        },
+        onError: (error: unknown) => {
+            const message = error instanceof Error ? error.message : "Unable to cancel booking.";
+            toast.error(message);
+        },
+    });
+
+    const reviewMutation = useMutation({
+        mutationFn: ({ bookingId, rating, comment }: { bookingId: string; rating: number; comment: string }) =>
+            createReview(bookingId, rating, comment),
+        onSuccess: () => {
+            toast.success("Review submitted successfully.");
+            setReviewBookingId(null);
+            setReviewRating(5);
+            setReviewComment("");
+            queryClient.invalidateQueries({ queryKey: ["bookings"] });
+        },
+        onError: (error: unknown) => {
+            const message = error instanceof Error ? error.message : "Unable to submit review.";
+            toast.error(message);
         },
     });
 
@@ -97,7 +130,7 @@ export default function CustomerBookingsPage() {
                         {bookings.map((booking) => {
                             const isPaid = booking.payment?.status === "COMPLETED" || booking.status === BOOKING_STATUS.PAID;
                             const canPay = !isPaid && booking.payment?.status !== "PENDING" && booking.status !== BOOKING_STATUS.DECLINED && booking.status !== BOOKING_STATUS.CANCELLED;
-                            const isSubmitting = paymentMutation.isLoading && selectedBookingId === booking.id;
+                            const isSubmitting = paymentMutation.isMutating && selectedBookingId === booking.id;
 
                             return (
                                 <Card key={booking.id} className="space-y-4">
@@ -127,16 +160,98 @@ export default function CustomerBookingsPage() {
 
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                         <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Booking ID: {booking.id}</p>
-                                        {canPay ? (
-                                            <Button size="sm" onClick={() => handlePay(booking.id)} disabled={isSubmitting}>
-                                                {isSubmitting ? "Preparing checkout..." : "Pay now"}
-                                            </Button>
-                                        ) : (
-                                            <Button size="sm" variant="outline" disabled>
-                                                {isPaid ? "Paid" : booking.payment?.status === "PENDING" ? "Awaiting payment" : "Not available"}
-                                            </Button>
-                                        )}
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            {canPay ? (
+                                                <Button size="sm" onClick={() => handlePay(booking.id)} disabled={isSubmitting}>
+                                                    {isSubmitting ? "Preparing checkout..." : "Pay now"}
+                                                </Button>
+                                            ) : (
+                                                <Button size="sm" variant="outline" disabled>
+                                                    {isPaid ? "Paid" : booking.payment?.status === "PENDING" ? "Awaiting payment" : "Not available"}
+                                                </Button>
+                                            )}
+
+                                            {booking.status && ![BOOKING_STATUS.COMPLETED, BOOKING_STATUS.CANCELLED, BOOKING_STATUS.DECLINED].includes(booking.status) ? (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => cancelMutation.mutate({ bookingId: booking.id })}
+                                                    disabled={cancelMutation.isMutating && cancelMutation.variables?.bookingId === booking.id}
+                                                >
+                                                    {cancelMutation.isMutating && cancelMutation.variables?.bookingId === booking.id ? "Cancelling..." : "Cancel booking"}
+                                                </Button>
+                                            ) : null}
+                                        </div>
                                     </div>
+
+                                    {booking.status === BOOKING_STATUS.COMPLETED ? (
+                                        <div className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                            {reviewBookingId === booking.id ? (
+                                                <form
+                                                    onSubmit={(event) => {
+                                                        event.preventDefault();
+                                                        reviewMutation.mutate({
+                                                            bookingId: booking.id,
+                                                            rating: reviewRating,
+                                                            comment: reviewComment,
+                                                        });
+                                                    }}
+                                                    className="space-y-4"
+                                                >
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-slate-700" htmlFor="rating">
+                                                            Rating
+                                                        </label>
+                                                        <select
+                                                            id="rating"
+                                                            className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+                                                            value={reviewRating}
+                                                            onChange={(event) => setReviewRating(Number(event.target.value))}
+                                                        >
+                                                            {[5, 4, 3, 2, 1].map((value) => (
+                                                                <option key={value} value={value}>
+                                                                    {value} star{value > 1 ? "s" : ""}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-slate-700" htmlFor="comment">
+                                                            Comment
+                                                        </label>
+                                                        <textarea
+                                                            id="comment"
+                                                            rows={3}
+                                                            className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+                                                            value={reviewComment}
+                                                            onChange={(event) => setReviewComment(event.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        <Button type="submit" size="sm" disabled={reviewMutation.isMutating}>
+                                                            {reviewMutation.isMutating ? "Submitting review..." : "Submit review"}
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => setReviewBookingId(null)}
+                                                        >
+                                                            Close
+                                                        </Button>
+                                                    </div>
+                                                </form>
+                                            ) : (
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    onClick={() => setReviewBookingId(booking.id)}
+                                                >
+                                                    Leave review
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ) : null}
                                 </Card>
                             );
                         })}
