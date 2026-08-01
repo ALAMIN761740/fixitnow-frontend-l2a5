@@ -103,8 +103,8 @@ export default function AdminCategoriesPage() {
                                 {errors.description ? <p className="mt-2 text-sm text-red-600">{errors.description.message}</p> : null}
                             </div>
 
-                            <Button type="submit" disabled={isSubmitting || createCategoryMutation.isMutating}>
-                                {isSubmitting || createCategoryMutation.isMutating ? "Creating category..." : "Create category"}
+                            <Button type="submit" disabled={isSubmitting || createCategoryMutation.status === "pending"}>
+                                {isSubmitting || createCategoryMutation.status === "pending" ? "Creating category..." : "Create category"}
                             </Button>
                         </form>
                     </Card>

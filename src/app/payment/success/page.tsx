@@ -15,7 +15,7 @@ export default function PaymentSuccessPage() {
     const queryClient = useQueryClient();
     const transactionId = searchParams.get("session_id") ?? searchParams.get("transactionId") ?? "";
 
-    const { mutate, isLoading, isError, error } = useMutation({
+    const mutation = useMutation({
         mutationFn: () => confirmPaymentSession(transactionId),
         onSuccess: () => {
             toast.success("Payment completed successfully.");
@@ -32,8 +32,8 @@ export default function PaymentSuccessPage() {
             return;
         }
 
-        mutate();
-    }, [transactionId, mutate]);
+        mutation.mutate();
+    }, [transactionId, mutation]);
 
     return (
         <main className="min-h-screen bg-slate-50 px-4 py-16">
@@ -47,11 +47,11 @@ export default function PaymentSuccessPage() {
                         </p>
                     </div>
 
-                    {isLoading ? (
+                    {mutation.status === "pending" ? (
                         <p className="text-sm text-slate-600">Confirming payment...</p>
                     ) : null}
 
-                    {isError ? (
+                    {mutation.status === "error" ? (
                         <p className="text-sm text-rose-600">An error occurred while confirming your payment.</p>
                     ) : null}
 

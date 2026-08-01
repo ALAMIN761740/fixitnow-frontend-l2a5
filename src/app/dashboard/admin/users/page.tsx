@@ -67,7 +67,7 @@ export default function AdminUsersPage() {
                             const status = user.status ?? "ACTIVE";
                             const isAdmin = user.role === "ADMIN";
                             const action = isAdmin ? null : status === "BANNED" ? "ACTIVE" : "BANNED";
-                            const isMutating = statusMutation.isMutating && statusMutation.variables?.userId === user.id;
+                            const isMutating = statusMutation.status === "pending" && statusMutation.variables?.userId === user.id;
 
                             return (
                                 <Card key={user.id} className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
@@ -81,7 +81,8 @@ export default function AdminUsersPage() {
                                     {action ? (
                                         <Button
                                             size="sm"
-                                            variant={action === "BANNED" ? "danger" : "secondary"}
+                                            variant="outline"
+                                            className={action === "BANNED" ? "text-rose-600 hover:bg-rose-50" : "text-slate-700 hover:bg-slate-100"}
                                             onClick={() => statusMutation.mutate({ userId: user.id, status: action })}
                                             disabled={isMutating}
                                         >

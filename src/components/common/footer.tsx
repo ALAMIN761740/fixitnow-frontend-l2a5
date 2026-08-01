@@ -10,11 +10,11 @@ const footerLinks = [
 
 export function Footer() {
     return (
-        <footer className="border-t border-slate-200 bg-slate-950 text-slate-200">
+        <footer className="border-t border-slate-200/70 bg-slate-950 text-slate-200">
             <Container className="flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p className="text-lg font-semibold text-white">{APP_NAME}</p>
-                    <p className="mt-2 text-sm text-slate-400">
+                    <p className="mt-2 max-w-xl text-sm text-slate-400">
                         Reliable booking, trusted technicians, and modern service management.
                     </p>
                 </div>

@@ -34,7 +34,7 @@ export function Section({
                             </p>
                         ) : null}
                         {title ? (
-                            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                                 {title}
                             </h2>
                         ) : null}

@@ -58,7 +58,7 @@ export default function CustomerBookingsPage() {
 
     const paymentMutation = useMutation({
         mutationFn: createPaymentSession,
-        onMutate: ({ bookingId }) => {
+        onMutate: (bookingId: string) => {
             setSelectedBookingId(bookingId);
         },
         onSuccess: (data) => {
@@ -130,7 +130,7 @@ export default function CustomerBookingsPage() {
                         {bookings.map((booking) => {
                             const isPaid = booking.payment?.status === "COMPLETED" || booking.status === BOOKING_STATUS.PAID;
                             const canPay = !isPaid && booking.payment?.status !== "PENDING" && booking.status !== BOOKING_STATUS.DECLINED && booking.status !== BOOKING_STATUS.CANCELLED;
-                            const isSubmitting = paymentMutation.isMutating && selectedBookingId === booking.id;
+                            const isSubmitting = paymentMutation.status === "pending" && selectedBookingId === booking.id;
 
                             return (
                                 <Card key={booking.id} className="space-y-4">
@@ -171,14 +171,14 @@ export default function CustomerBookingsPage() {
                                                 </Button>
                                             )}
 
-                                            {booking.status && ![BOOKING_STATUS.COMPLETED, BOOKING_STATUS.CANCELLED, BOOKING_STATUS.DECLINED].includes(booking.status) ? (
+                                            {booking.status && !([BOOKING_STATUS.COMPLETED, BOOKING_STATUS.CANCELLED, BOOKING_STATUS.DECLINED] as string[]).includes(booking.status) ? (
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => cancelMutation.mutate({ bookingId: booking.id })}
-                                                    disabled={cancelMutation.isMutating && cancelMutation.variables?.bookingId === booking.id}
+                                                    disabled={cancelMutation.status === "pending" && cancelMutation.variables?.bookingId === booking.id}
                                                 >
-                                                    {cancelMutation.isMutating && cancelMutation.variables?.bookingId === booking.id ? "Cancelling..." : "Cancel booking"}
+                                                    {cancelMutation.status === "pending" && cancelMutation.variables?.bookingId === booking.id ? "Cancelling..." : "Cancel booking"}
                                                 </Button>
                                             ) : null}
                                         </div>
@@ -228,8 +228,8 @@ export default function CustomerBookingsPage() {
                                                         />
                                                     </div>
                                                     <div className="flex flex-wrap gap-3">
-                                                        <Button type="submit" size="sm" disabled={reviewMutation.isMutating}>
-                                                            {reviewMutation.isMutating ? "Submitting review..." : "Submit review"}
+                                                        <Button type="submit" size="sm" disabled={reviewMutation.status === "pending"}>
+                                                            {reviewMutation.status === "pending" ? "Submitting review..." : "Submit review"}
                                                         </Button>
                                                         <Button
                                                             type="button"

@@ -34,11 +34,11 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div className="max-w-2xl">
                 <Badge variant="secondary">Live public platform</Badge>
-                <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+                <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
                   Discover trusted services with {APP_NAME}.
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-slate-600">
-                  Browse services, compare technicians, and find the right expert for every job.
+                  Browse services, compare technicians, and book the right expert for every job.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Button asChild size="lg">
@@ -52,13 +52,13 @@ export default function Home() {
 
               <Card className="p-8">
                 <div className="grid gap-4">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-900">Fast browsing</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">Search, filter, and explore the full service and technician directory.</p>
+                  <div className="rounded-[28px] border border-slate-200/80 bg-slate-50 p-5 shadow-sm shadow-slate-200/50">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">Fast browsing</p>
+                    <p className="mt-3 text-base font-semibold text-slate-950">Search, filter, and explore the full service and technician directory.</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-900">Responsive layout</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">Cards and sections adapt beautifully across devices.</p>
+                  <div className="rounded-[28px] border border-slate-200/80 bg-slate-50 p-5 shadow-sm shadow-slate-200/50">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">Responsive layout</p>
+                    <p className="mt-3 text-base font-semibold text-slate-950">A polished experience for desktop, tablet, and mobile.</p>
                   </div>
                 </div>
               </Card>

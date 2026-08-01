@@ -52,7 +52,7 @@ export default function TechnicianBookingsPage() {
     });
 
     const actionButtons = (bookingId: string, status?: string) => {
-        const isMutating = statusMutation.isMutating && statusMutation.variables?.bookingId === bookingId;
+        const isMutating = statusMutation.status === "pending" && statusMutation.variables?.bookingId === bookingId;
 
         if (status === BOOKING_STATUS.REQUESTED) {
             return (

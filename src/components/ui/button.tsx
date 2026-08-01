@@ -17,12 +17,12 @@ export function Button({
 }: ButtonProps) {
     const variants = {
         default:
-            "bg-slate-900 text-white shadow-sm hover:bg-slate-700 focus-visible:ring-slate-500",
+            "bg-slate-950 text-white shadow-lg shadow-slate-200/30 hover:bg-slate-900 focus-visible:ring-slate-500",
         secondary:
-            "bg-slate-100 text-slate-700 hover:bg-slate-200 focus-visible:ring-slate-400",
+            "bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400",
         outline:
-            "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400",
-        ghost: "bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400",
+            "border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus-visible:ring-slate-400",
+        ghost: "bg-transparent text-slate-900 hover:bg-slate-100 focus-visible:ring-slate-400",
     } as const;
 
     const sizes = {
