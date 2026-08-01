@@ -21,7 +21,15 @@ export interface Technician {
     bio?: string;
     rating?: number;
     experience?: number;
+    experienceYears?: number;
+    skills?: string[];
     services?: ServiceItem[];
     category?: Category | string;
     image?: string;
+    user?: {
+        id: string;
+        name?: string;
+        email: string;
+    };
+    reviews?: unknown[];
 }
