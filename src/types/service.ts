@@ -6,7 +6,8 @@ export interface Category {
 
 export interface ServiceItem {
     id: string;
-    name: string;
+    name?: string;
+    title?: string;
     description?: string;
     category?: Category | string;
     price?: number;
@@ -15,7 +16,7 @@ export interface ServiceItem {
 
 export interface Technician {
     id: string;
-    name: string;
+    name?: string;
     email?: string;
     phone?: string;
     bio?: string;

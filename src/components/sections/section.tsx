@@ -29,17 +29,17 @@ export function Section({
                         )}
                     >
                         {eyebrow ? (
-                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">
+                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#2563EB]">
                                 {eyebrow}
                             </p>
                         ) : null}
                         {title ? (
-                            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#0F172A] sm:text-4xl">
                                 {title}
                             </h2>
                         ) : null}
                         {description ? (
-                            <p className="mt-4 text-lg leading-8 text-slate-600">
+                            <p className="mt-4 text-lg leading-8 text-[#475569]">
                                 {description}
                             </p>
                         ) : null}

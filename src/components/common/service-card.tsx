@@ -13,18 +13,20 @@ interface TechnicianCardProps {
 }
 
 export function ServiceCard({ service }: ServiceCardProps) {
+    const serviceTitle = service.title ?? service.name ?? "Service";
+
     return (
         <Card className="flex h-full flex-col justify-between gap-4 p-6">
             <div>
                 <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-semibold text-slate-900">{service.name}</h3>
+                    <h3 className="text-lg font-semibold text-[#0F172A]">{serviceTitle}</h3>
                     <Badge variant="secondary">{typeof service.category === "string" ? service.category : service.category?.name ?? "Service"}</Badge>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{service.description ?? "Reliable service with modern support."}</p>
+                <p className="mt-3 text-sm leading-6 text-[#475569]">{service.description ?? "Reliable service with modern support."}</p>
             </div>
             <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-900">${service.price ?? 0}</p>
-                <Link href="/services" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-[#0F172A]">${service.price ?? 0}</p>
+                <Link href="/services" className="inline-flex items-center gap-2 text-sm font-semibold text-[#2563EB] transition hover:text-[#1D4ED8]">
                     Explore <ArrowRight className="h-4 w-4" />
                 </Link>
             </div>
@@ -33,11 +35,13 @@ export function ServiceCard({ service }: ServiceCardProps) {
 }
 
 export function TechnicianCard({ technician }: TechnicianCardProps) {
+    const technicianName = technician.user?.name ?? technician.name ?? "Technician";
+
     return (
         <Card className="flex h-full flex-col justify-between p-6">
             <div>
                 <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-semibold text-slate-900">{technician.name}</h3>
+                    <h3 className="text-lg font-semibold text-slate-900">{technicianName}</h3>
                     <Badge variant="success">{technician.rating ? `${technician.rating.toFixed(1)} ★` : "Top rated"}</Badge>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{technician.bio ?? "Experienced professional ready to help."}</p>

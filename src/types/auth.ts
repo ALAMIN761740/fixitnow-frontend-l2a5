@@ -1,11 +1,13 @@
 export type UserRole = "CUSTOMER" | "TECHNICIAN" | "ADMIN";
 
+export type UserStatus = "ACTIVE" | "BANNED";
+
 export interface AuthUser {
     id: string;
-    name?: string;
+    name: string;
     email: string;
     role: UserRole;
-    status?: string;
+    status?: UserStatus;
 }
 
 export interface LoginPayload {
@@ -21,7 +23,6 @@ export interface RegisterPayload {
 }
 
 export interface AuthResponse {
-    token?: string;
-    accessToken?: string;
+    token: string;
     user: AuthUser;
 }

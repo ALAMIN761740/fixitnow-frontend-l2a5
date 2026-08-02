@@ -8,6 +8,17 @@ export interface BookingServiceSummary {
 export interface BookingTechnicianSummary {
     id: string;
     name?: string;
+    user?: {
+        id?: string;
+        name?: string;
+        email?: string;
+    };
+}
+
+export interface BookingCustomerSummary {
+    id: string;
+    name?: string;
+    email?: string;
 }
 
 export interface BookingPaymentSummary {
@@ -25,5 +36,6 @@ export interface Booking {
     createdAt?: string;
     service?: BookingServiceSummary;
     technician?: BookingTechnicianSummary;
+    customer?: BookingCustomerSummary;
     payment?: BookingPaymentSummary;
 }

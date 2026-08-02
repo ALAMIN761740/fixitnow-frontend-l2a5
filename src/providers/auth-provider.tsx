@@ -99,8 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const registerUser = async (payload: RegisterPayload) => {
-        const auth = await register(payload);
-        persistAuth(auth);
+        await register(payload);
         toast.success("Account created successfully");
     };
 

@@ -9,10 +9,10 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, action }: EmptyStateProps) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-[28px] border border-dashed border-slate-300 bg-slate-50 px-8 py-16 text-center shadow-sm shadow-slate-200/50">
-            <h3 className="text-lg font-semibold text-slate-950">{title}</h3>
+        <div className="flex flex-col items-center justify-center rounded-[28px] border border-[#DBEAFE] bg-[#EFF6FF] px-8 py-16 text-center shadow-sm shadow-sky-200/30">
+            <h3 className="text-lg font-semibold text-[#0F172A]">{title}</h3>
             {description ? (
-                <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">{description}</p>
+                <p className="mt-2 max-w-md text-sm leading-6 text-[#475569]">{description}</p>
             ) : null}
             {action ? <div className="mt-6">{action}</div> : null}
         </div>
