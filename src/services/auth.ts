@@ -47,7 +47,7 @@ export async function login(
         payload
     );
 
-    return normalizeAuthResponse(response.data);
+    return normalizeAuthResponse(response.data.data);
 }
 
 
@@ -73,5 +73,5 @@ export async function getCurrentUser(): Promise<AuthResponse> {
         "/auth/me"
     );
 
-    return normalizeAuthResponse(response.data);
+    return normalizeAuthResponse(response.data.data);
 }
