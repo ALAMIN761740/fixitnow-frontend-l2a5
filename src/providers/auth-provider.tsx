@@ -24,6 +24,7 @@ interface AuthContextValue {
     loginUser: (payload: LoginPayload) => Promise<void>;
     registerUser: (payload: RegisterPayload) => Promise<void>;
     logout: () => void;
+    refreshUser: () => Promise<void>;
     isAuthenticated: boolean;
     hasRole: (role: UserRole) => boolean;
 }
@@ -32,58 +33,72 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function setStoredToken(token: string) {
     if (typeof window !== "undefined") {
-        window.localStorage.setItem("accessToken", token);
+        localStorage.setItem("accessToken", token);
+
         document.cookie = `accessToken=${token}; path=/; max-age=604800; SameSite=Lax`;
     }
 }
 
 function getStoredToken() {
-    if (typeof window === "undefined") {
-        return null;
-    }
+    if (typeof window === "undefined") return null;
 
-    return window.localStorage.getItem("accessToken");
+    return localStorage.getItem("accessToken");
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+    children,
+}: {
+    children: ReactNode;
+}) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
 
     const persistAuth = (auth: AuthResponse) => {
         const token = auth.token ?? auth.accessToken;
+
         if (!token) {
-            throw new Error("No authentication token received");
+            throw new Error("Authentication token was not received.");
         }
 
         setStoredToken(token);
         setUser(auth.user);
     };
 
+    const refreshUser = async () => {
+        try {
+            const currentUser = await getCurrentUser();
+            setUser(currentUser);
+        } catch {
+            logout();
+        }
+    };
+
     const logout = () => {
         if (typeof window !== "undefined") {
-            window.localStorage.removeItem("accessToken");
-            document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            localStorage.removeItem("accessToken");
+
+            document.cookie =
+                "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
+
         setUser(null);
-        toast.success("Signed out");
+        toast.success("Signed out successfully");
     };
 
     useEffect(() => {
         async function bootstrap() {
             const token = getStoredToken();
+
             if (!token) {
                 setLoading(false);
                 return;
             }
 
             try {
-                const authUser = await getCurrentUser();
-                setUser(authUser.user);
+                const currentUser = await getCurrentUser();
+                setUser(currentUser);
             } catch {
-                if (typeof window !== "undefined") {
-                    window.localStorage.removeItem("accessToken");
-                }
-                setUser(null);
+                logout();
             } finally {
                 setLoading(false);
             }
@@ -94,12 +109,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const loginUser = async (payload: LoginPayload) => {
         const auth = await login(payload);
+
         persistAuth(auth);
+
         toast.success("Signed in successfully");
     };
 
     const registerUser = async (payload: RegisterPayload) => {
         await register(payload);
+
         toast.success("Account created successfully");
     };
 
@@ -112,13 +130,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             loginUser,
             registerUser,
             logout,
+            refreshUser,
             isAuthenticated: Boolean(user),
             hasRole,
         }),
-        [user, loading],
+        [user, loading]
     );
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export function useAuth() {
